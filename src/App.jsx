@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 
 const C = {
-  navy:"#00274D",blue:"#0066A1",teal:"#00A8B5",
-  ltBlue:"#E8F4F8",white:"#FFFFFF",offwhite:"#F5F8FA",
-  muted:"#607080",border:"#D0DDE6",
+  navy:"#431407",blue:"#C2410C",teal:"#EA580C",
+  ltBlue:"#FFF7ED",white:"#FFFFFF",offwhite:"#FFFBF7",
+  muted:"#78523A",border:"#FED7AA",
   orange:"#F97316",red:"#EF4444",green:"#22C55E",
 };
 
