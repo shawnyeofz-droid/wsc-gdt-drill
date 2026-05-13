@@ -14,6 +14,7 @@ const CATS = [
   {id:"display",label:"Display Design",code:"DD",icon:"◻"},
   {id:"illustration",label:"Illustration Design",code:"ID",icon:"◌"},
   {id:"advertising",label:"Advertising Design",code:"AD",icon:"▲"},
+  {id:"infographic",label:"Infographic Design",code:"IG",icon:"◎"},
   {id:"random",label:"Randomise",code:"RD",icon:"⟳"},
 ];
 const REAL_CATS = CATS.filter(c => c.id !== "random");
@@ -220,16 +221,16 @@ export default function App() {
   }, [running]);
 
   // ── API call routes through /api/generate (serverless function) ──
-const api = async (sys, usr) => {
-  const resp = await fetch('/api/generate', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ system: sys, user: usr }),
-  });
-  const d = await resp.json();
-  if (!resp.ok) throw new Error(d?.error?.message || 'API error ' + resp.status);
-  return d.content?.find(b => b.type === 'text')?.text || '';
-};
+  const api = async (sys, usr) => {
+    const resp = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system: sys, user: usr }),
+    });
+    const d = await resp.json();
+    if (!resp.ok) throw new Error(d?.error?.message || 'API error ' + resp.status);
+    return d.content?.find(b => b.type === 'text')?.text || '';
+  };
 
   const loadScript = src => new Promise((res, rej) => {
     if (document.querySelector(`script[src="${src}"]`)) return res();
