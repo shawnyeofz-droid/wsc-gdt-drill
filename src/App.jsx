@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 
 const C = {
-  navy:"#431407",blue:"#C2410C",teal:"#EA580C",
-  ltBlue:"#FFF7ED",white:"#FFFFFF",offwhite:"#FFFBF7",
-  muted:"#78523A",border:"#FED7AA",
-  orange:"#F97316",red:"#EF4444",green:"#22C55E",
+  navy:"#990808",blue:"#F44027",teal:"#EDC537",
+  ltBlue:"#FEF9E7",white:"#FFFFFF",offwhite:"#F4F2EF",
+  muted:"#7A3530",border:"#F5D9A8",
+  orange:"#F44027",red:"#EF4444",green:"#22C55E",
 };
 
 const CATS = [
