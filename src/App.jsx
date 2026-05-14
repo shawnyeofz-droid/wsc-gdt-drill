@@ -238,9 +238,9 @@ export default function App(){
   },[running]);
 
   const api=async(sys,usr)=>{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+    const resp=await fetch('/api/generate',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,system:sys,messages:[{role:'user',content:usr}]}),
+      body:JSON.stringify({system:sys,user:usr}),
     });
     const d=await resp.json();
     if(!resp.ok)throw new Error(d?.error?.message||'API error '+resp.status);
