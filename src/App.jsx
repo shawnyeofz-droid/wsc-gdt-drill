@@ -16,6 +16,7 @@ const CATS = [
   {id:"advertising",label:"Advertising Design",code:"AD",icon:"▲"},
   {id:"infographic",label:"Infographic Design",code:"IG",icon:"◎"},
   {id:"typography",label:"Typography Design",code:"TY",icon:"Aa"},
+  {id:"logo",label:"Logo & Identity",code:"LI",icon:"◑"},
   {id:"random",label:"Randomise",code:"RD",icon:"⟳"},
 ];
 const REAL_CATS = CATS.filter(c => c.id !== "random");
