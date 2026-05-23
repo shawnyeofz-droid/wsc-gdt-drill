@@ -85,7 +85,6 @@ const buildBriefSys = (cat, mins) => `You are a WorldSkills GDT training brief w
 | ■ | [Name] | #[XXXXXX] |
 
 - **Images:** Appendix_02_Images — [describe contents]
-- **Typeface:** [Font name] — [usage note]
 
 ### Judging Focus
 [2 sentences]
@@ -238,9 +237,9 @@ export default function App(){
   },[running]);
 
   const api=async(sys,usr)=>{
-    const resp=await fetch('/api/generate',{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({system:sys,user:usr}),
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,system:sys,messages:[{role:'user',content:usr}]}),
     });
     const d=await resp.json();
     if(!resp.ok)throw new Error(d?.error?.message||'API error '+resp.status);
@@ -338,8 +337,9 @@ export default function App(){
   const genAppendix=async()=>{
     setALoad(true);setAppendix('');
     const c=CATS.find(x=>x.id===cat);
+    const briefSummary=brief.split('\n').slice(0,40).join('\n');
     try{
-      const text=await api(buildAppendixSys(c.label),`Category: ${c.label}\n\nBrief:\n${brief}\n\nGenerate the appendix text now.`);
+      const text=await api(buildAppendixSys(c.label),`Category: ${c.label}\n\nBrief summary:\n${briefSummary}\n\nGenerate the appendix text now.`);
       setAppendix(text);
     }catch(e){setAppendix('> Error generating appendix — please try again.');}
     setALoad(false);
