@@ -1,31 +1,15 @@
-export const config = { runtime: 'edge' };
+export const config = { maxDuration: 30 };
 
-export default async function handler(req) {
-  if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  let system, user;
-  try {
-    const body = await req.json();
-    system = body.system;
-    user = body.user;
-  } catch (e) {
-    return new Response(JSON.stringify({ error: 'Invalid request body' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  if (!system || !user) {
-    return new Response(JSON.stringify({ error: 'Missing system or user parameter' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
+  const { system, user } = req.body || {};
+  if (!system || !user) return res.status(400).json({ error: 'Missing system or user parameter' });
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -42,16 +26,9 @@ export default async function handler(req) {
         messages: [{ role: 'user', content: user }],
       }),
     });
-
     const data = await response.json();
-    return new Response(JSON.stringify(data), {
-      status: response.status,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return res.status(response.status).json(data);
   } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return res.status(500).json({ error: e.message });
   }
 }
