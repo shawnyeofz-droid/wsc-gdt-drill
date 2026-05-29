@@ -30,6 +30,7 @@ const PAPER_REFS = {
   advertising: "Key visual headline + subline · Banner/GIF copy (max 8 words + CTA) · Reel caption sequence or VO script (3-5 lines).",
   infographic: "Title + subtitle · 4-6 data points with source attribution · Short section labels.",
   typography: "Feature headline text · Body paragraph · Pull quote or featured word/phrase.",
+  logo: "Brand name · Tagline · Brand values (3 words) · Industry sector · Brief brand personality description (e.g. bold, minimal, approachable).",
 };
 
 const buildBriefSys = (cat, mins) => `You are a WorldSkills GDT training brief writer. Generate a concise Quick Drill brief for a ${mins}-minute practice session in ${cat}.
@@ -236,10 +237,12 @@ export default function App(){
     return()=>clearInterval(intervalRef.current);
   },[running]);
 
+  // ── Routes through /api/generate serverless function ──
   const api=async(sys,usr)=>{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,system:sys,messages:[{role:'user',content:usr}]}),
+    const resp=await fetch('/api/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({system:sys,user:usr}),
     });
     const d=await resp.json();
     if(!resp.ok)throw new Error(d?.error?.message||'API error '+resp.status);
@@ -353,7 +356,6 @@ export default function App(){
   const elapsed=mins?(mins*60-remaining)/(mins*60):0;
   const milestones=[{label:'Concept',pct:0.30},{label:'Execution',pct:0.70},{label:'Refinement',pct:0.90}];
   const hdrBtn={background:'rgba(255,255,255,0.1)',color:'#fff',border:'1px solid rgba(255,255,255,0.25)',borderRadius:5,padding:'4px 11px',cursor:'pointer',fontSize:11,fontFamily:'inherit'};
-
   const currentContent=tab==='brief'?brief:appendix;
   const currentLabel=tab==='brief'?`Brief · ${mins} min`:'Appendix';
 
@@ -382,7 +384,6 @@ export default function App(){
       <div style={{height:3,background:`linear-gradient(90deg,${C.blue},${C.teal})`}}/>
 
       <div style={{maxWidth:900,margin:'0 auto',padding:'24px 16px'}}>
-
         {step==='select'&&(
           <div>
             <div style={{marginBottom:22}}>
@@ -435,7 +436,6 @@ export default function App(){
         {step==='drill'&&(
           <div style={{display:'grid',gridTemplateColumns:'1fr 188px',gap:16,alignItems:'start'}}>
             <div style={{background:C.white,borderRadius:10,boxShadow:'0 2px 14px rgba(0,39,77,0.07)',border:`1px solid ${C.border}`,overflow:'hidden'}}>
-              {/* Panel header */}
               <div style={{background:C.navy,padding:'11px 22px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
                 <div><span style={{color:C.teal,fontWeight:900,fontSize:13}}>world</span><span style={{color:'#fff',fontWeight:900,fontSize:13}}>skills</span></div>
                 <div style={{display:'flex',gap:6}}>
@@ -444,8 +444,6 @@ export default function App(){
                 </div>
               </div>
               <div style={{height:3,background:`linear-gradient(90deg,${C.blue},${C.teal})`}}/>
-
-              {/* Tabs */}
               <div style={{display:'flex',borderBottom:`1px solid ${C.border}`,background:C.offwhite}}>
                 {['brief','appendix'].map(t=>(
                   <button key={t} onClick={()=>setTab(t)}
@@ -454,8 +452,6 @@ export default function App(){
                   </button>
                 ))}
               </div>
-
-              {/* Content */}
               <div style={{padding:'22px 26px',lineHeight:1.6,minHeight:300}}>
                 {tab==='brief'&&renderMD(brief)}
                 {tab==='appendix'&&(
@@ -471,22 +467,17 @@ export default function App(){
                       <div style={{fontSize:32,marginBottom:12}}>📄</div>
                       <p style={{color:C.navy,fontWeight:700,fontSize:14,marginBottom:6}}>Generate Appendix Text</p>
                       <p style={{color:C.muted,fontSize:12,maxWidth:380,margin:'0 auto 18px'}}>Generates Appendix_01 copy text, Appendix_02 image list, and Appendix_03 logo files — modelled on real WSC past-year paper style.</p>
-                      <button onClick={genAppendix}
-                        style={{background:C.navy,color:'#fff',border:'none',borderRadius:8,padding:'10px 24px',cursor:'pointer',fontSize:13,fontWeight:700,fontFamily:'inherit'}}>
-                        Generate Appendix
-                      </button>
+                      <button onClick={genAppendix} style={{background:C.navy,color:'#fff',border:'none',borderRadius:8,padding:'10px 24px',cursor:'pointer',fontSize:13,fontWeight:700,fontFamily:'inherit'}}>Generate Appendix</button>
                     </div>
                   )
                 )}
               </div>
-
               <div style={{borderTop:`1px solid ${C.border}`,padding:'8px 24px',display:'flex',justifyContent:'space-between',background:C.offwhite}}>
                 <span style={{color:C.muted,fontSize:9}}>Generated for training purposes · NYP School of Design & Media</span>
                 <span style={{color:C.muted,fontSize:9}}>{new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</span>
               </div>
             </div>
 
-            {/* Timer */}
             <div style={{position:'sticky',top:16}}>
               <div style={{background:C.white,borderRadius:10,border:`1px solid ${C.border}`,overflow:'hidden',boxShadow:'0 2px 14px rgba(0,39,77,0.07)'}}>
                 <div style={{background:C.navy,padding:'10px 14px',textAlign:'center'}}>
