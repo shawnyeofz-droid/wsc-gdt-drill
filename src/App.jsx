@@ -363,11 +363,61 @@ export default function App(){
   const genAppendix=async()=>{
     setALoad(true);setAppendix('');
     const c=CATS.find(x=>x.id===cat);
-    const briefSummary=brief.split('\n').slice(0,40).join('\n');
+    const key=c.label.toLowerCase().replace(/\s+design$/i,'').replace(/\s*&\s*/i,' ').trim();
+    const refMap={
+      corporate:`Cover headline + month/year · Introduction: bold headline + 2 body paragraphs · Contents: 8 sections with page numbers · Logo: headline + rules label · Colour: headline · Typography: headline · Iconography: headline + 5 industry-specific icon labels · Photography: headline · Application: headline · Contact: full name, title, company, phone, email · Back cover: copyright + address + website. Billboard: bold headline + subheading. Vehicle: tagline.`,
+      packaging:`Two variants. Per variant — Product name + volume + variant descriptor + hero headline + 2–3 benefit sentences + 3 feature bullets + 2 body paragraphs + INCI ingredients list + manufacturer + address + website + legal warning + regulatory logos. Brochure front: logos + product name + tagline. Inside: welcome para + specs table + 2 body sections. Back: tagline + social handles + hashtags + website + CTA.`,
+      editorial:`Per spread: section label + heading + sub-heading + 80–150 word body copy. Story pages: title + 3–4 sentence narrative + URL. Feature pages: bold feature name + 1–2 sentence description. Cover outside: product name + hero line + year + website. Cover inside: 5 brand values + address + phone + website. Back cover: campaign name + 3–4 sentences + CTA + QR URL.`,
+      display:`Poster: headline + 1–2 supporting sentences + event/venue + date + website. Exhibition labels: 4–6 short section labels + navigation text + key brand message. Roll-up: headline + subheading + website.`,
+      illustration:`Series title + concept (2–3 sentences). Per piece: title + 1–2 sentence theme. Any text to incorporate into artwork.`,
+      advertising:`Key visual: headline + subheading. Banner 728×90: max 8 words + CTA. Banner 160×600: 4-word headline + CTA. Reel 1080×1920: 3–5 caption lines or VO script.`,
+      infographic:`Title + subtitle. 4–6 data points: statistic + source + short label. Section headers. One attributed pull quote.`,
+      typography:`Feature headline (3–6 words). Body paragraph (80–100 words). Pull quote (10–20 words, attributed).`,
+      logo:`Brand name + tagline (6–10 words). 3 brand values (single words). 2–3 personality adjectives. 1 industry sentence.`,
+    };
+    const ref=refMap[key]||refMap.corporate;
+    const sys=`You generate WSC GDT Appendix text. Write REAL usable copy — actual words the student uses in their design. No placeholders or square brackets.
+
+Category: ${c.label}
+Appendix style: ${ref}
+
+Output exactly this format:
+
+## Appendix_01_Text
+
+> Note: All text below must be incorporated into the design.
+
+**[Label the design element clearly e.g. Poster Headline / Cover Title / Package Front / Page 2 Heading]:**
+[Write the actual copy text here]
+
+**[Next element]:**
+[Actual text — keep writing until you have at least 150 words total]
+
+---
+
+## Appendix_02_Images
+
+- image_01.jpg — [specific description]
+- image_02.jpg — [specific description]
+- image_03.jpg — [specific description]
+- image_04.jpg — [specific description]
+
+---
+
+## Appendix_03_Logos
+
+- Logo_CMYK.ai — primary colour lockup
+- Logo_Reversed.ai — reversed for dark backgrounds
+- Logo_Black.ai — single colour version
+
+Write real copy only. No preamble. No explanation.`;
+    const briefSummary=brief.split('\n').slice(0,30).join('\n');
     try{
-      const text=await api(buildAppendixSys(c.label),`Category: ${c.label}\n\nBrief summary:\n${briefSummary}\n\nGenerate the appendix text now.`);
+      const text=await api(sys,`Category: ${c.label}\n\nBrief:\n${briefSummary}\n\nGenerate the appendix now.`);
       setAppendix(text);
-    }catch(e){setAppendix('> Error generating appendix — please try again.');}
+    }catch(e){
+      setAppendix(`> **Error:** ${e.message||'Unknown error'} — please try again.`);
+    }
     setALoad(false);
   };
 
